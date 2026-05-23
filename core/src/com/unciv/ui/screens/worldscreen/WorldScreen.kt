@@ -31,7 +31,10 @@ import com.unciv.ui.components.input.KeyboardBinding
 import com.unciv.ui.components.input.KeyboardPanningListener
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.Notification.NotificationCategory
 import com.unciv.ui.popups.AuthPopup
+import com.unciv.ui.popups.ConfirmPopup
 import com.unciv.ui.popups.Popup
 import com.unciv.ui.popups.ToastPopup
 import com.unciv.ui.popups.hasOpenPopups
@@ -296,11 +299,36 @@ class WorldScreen(
         globalShortcuts.add(KeyboardBinding.DeveloperConsole, action = ::openDeveloperConsole)
     }
 
-    @Readonly
     fun openDeveloperConsole() {
-        // No cheating unless you're by yourself, ignoring a possible spectator
-        if (gameInfo.civilizations.count { it.isHuman() && !it.isSpectator() } > 1) return
-        DevConsolePopup(this)
+        val moreThanOneHuman = gameInfo.civilizations.count { it.isHuman() && !it.isSpectator() } > 1
+        val allow = gameInfo.gameParameters.allowDevConsoleWithMultipleHumans
+        if (!moreThanOneHuman || allow) {
+            DevConsolePopup(this)
+            return
+        }
+
+        ConfirmPopup(
+            this,
+            "Enabling the developer console in a multiplayer game may allow cheating, and all other human players will be notified. Continue?",
+            "Continue"
+        ) {
+            val sourcePlayerName = viewingCiv.civName
+            val notificationText =
+                "⚠️ <b><color=#FF2323>Player $sourcePlayerName opened the Developer Console!</color></b>\nCheating is now possible."
+            gameInfo.civilizations
+                .filter { it.isHuman() && !it.isSpectator() && it != viewingCiv }
+                .forEach { civ ->
+                    civ.notifications.add(
+                        Notification(
+                            notificationText,
+                            arrayOf("OtherIcons/Notifications"),
+                            null,
+                            NotificationCategory.War
+                        )
+                    )
+                }
+            DevConsolePopup(this)
+        }.open()
     }
 
     private fun toggleUI() {
