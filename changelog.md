@@ -1,3 +1,30 @@
+## 4.20.10
+
+By SomeTroglodyte: 
+- Free policy notifications open policy screen 
+- A new triggerable Unique to choose a music track 
+- Better Scenario starts with fewer surprises 
+
+Boreal map type - By unciv-loof
+
+## 4.20.9
+
+AIs no longer stop creating cities late-game
+
+Add nation and capital city indicators in spy management
+
+Workers try to stay spread out - By Ambeco
+
+By SomeTroglodyte:
+- Show modifiers properly for improvement maintenance 
+- Fix translation generation for Comment nesting typed uniques 
+
+By unciv-loof:
+- Prevent AI from denouncing defeated civs 
+- Do not display (Unknown) after Civ name in MP metadata preview 
+
+Fix Educated Elite policy not gifting Great People - By AutumnPizazz
+
 ## 4.20.8
 
 Seamless world wrap generation for procedural maps - By Romelium
