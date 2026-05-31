@@ -298,8 +298,6 @@ class WorldScreen(
 
     @Readonly
     fun openDeveloperConsole() {
-        // No cheating unless you're by yourself, ignoring a possible spectator
-        if (gameInfo.civilizations.count { it.isHuman() && !it.isSpectator() } > 1) return
         DevConsolePopup(this)
     }
 
