@@ -32,7 +32,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
     var espionageEnabled = false
     var noStartBias = false
     var shufflePlayerOrder = false
-    var allowDevConsoleWithMultipleHumans = false
 
     var victoryTypes: ArrayList<String> = arrayListOf()
     var startingEra = "Ancient era"
@@ -81,7 +80,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
         parameters.espionageEnabled = espionageEnabled
         parameters.noStartBias = noStartBias
         parameters.shufflePlayerOrder = shufflePlayerOrder
-        parameters.allowDevConsoleWithMultipleHumans = allowDevConsoleWithMultipleHumans
         parameters.victoryTypes = ArrayList(victoryTypes)
         parameters.startingEra = startingEra
         parameters.showVictoryStats = showVictoryStats
@@ -110,7 +108,6 @@ class GameParameters : IsPartOfGameInfoSerialization { // Default values are the
             if (oneCityChallenge) yield("OCC")
             if (!nuclearWeaponsEnabled) yield("No nukes")
             if (godMode) yield("God mode")
-            if (allowDevConsoleWithMultipleHumans) yield("Dev console allowed in multiplayer")
             yield("Enabled Victories: " + victoryTypes.joinToString())
             yield(baseRuleset)
             yield(if (mods.isEmpty()) "no mods" else mods.joinToString(",", "mods=(", ")", 6) )

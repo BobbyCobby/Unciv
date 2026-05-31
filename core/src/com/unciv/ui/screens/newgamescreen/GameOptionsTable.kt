@@ -110,9 +110,8 @@ class GameOptionsTable(
         val checkboxTable = Table().apply { defaults().left().pad(2.5f) }
         val selectBoxTable = Table()
         checkboxTable.addIsOnlineMultiplayerCheckbox()
-        checkboxTable.addAnyoneCanSpectateCheckbox()
-        checkboxTable.addAllowDevConsoleCheckbox()
         if (gameParameters.isOnlineMultiplayer){
+            checkboxTable.addAnyoneCanSpectateCheckbox()
             selectBoxTable.addDurationSelectBox("Time until skip turn:", GameParameters::minutesUntilSkipTurn, 1, 0, 0)
             selectBoxTable.addDurationSelectBox("Total time to play:", GameParameters::minutesUntilForceResign, 3, 0, 0)
             selectBoxTable.addDurationSelectBox("Time recovered per turn:", GameParameters::minutesRecoveredPerTurn, 3, 0, 0)
@@ -201,10 +200,6 @@ class GameOptionsTable(
             {
                 gameParameters.anyoneCanSpectate = it
             }
-
-    private fun Table.addAllowDevConsoleCheckbox() =
-            addCheckbox("Allow developer console with multiple human players", gameParameters.allowDevConsoleWithMultipleHumans)
-            { gameParameters.allowDevConsoleWithMultipleHumans = it }
 
     private fun Table.addEnableEspionageCheckbox() =
         addCheckbox("Enable Espionage", gameParameters.espionageEnabled)
