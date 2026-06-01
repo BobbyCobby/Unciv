@@ -707,11 +707,17 @@ class GameInfo : IsPartOfGameInfoSerialization, HasGameInfoSerializationVersion 
             gameParameters.baseRuleset = gameParameters.baseRuleset.replace("-", " ")
         }
 
+        // Collect mods that need replacement first, then apply changes
+        // to avoid ConcurrentModificationException when iterating and modifying a LinkedHashSet
+        val modsToReplace = mutableMapOf<String, String>()
         for (mod in gameParameters.mods) {
             if (mod !in RulesetCache && mod.replace("-", " ") in RulesetCache) {
-                gameParameters.mods.remove(mod)
-                gameParameters.mods.add(mod.replace("-", " "))
+                modsToReplace[mod] = mod.replace("-", " ")
             }
+        }
+        for ((oldMod, newMod) in modsToReplace) {
+            gameParameters.mods.remove(oldMod)
+            gameParameters.mods.add(newMod)
         }
         
         ruleset = RulesetCache.getComplexRuleset(gameParameters)
