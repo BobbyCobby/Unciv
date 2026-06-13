@@ -1,3 +1,47 @@
+## 4.20.13
+
+Large memory performance improvements for large maps  
+
+Modding: show exact location of json file errors
+
+By SomeTroglodyte:
+- Context menu visual indicators 
+- Modding: Fixed "empty name" problems 
+- Fix expansion clearing barbarian camps leaving obsolete quests 
+- City buy tile context menu, to buy several tiles at once 
+
+Avoid centering on hidden wonder locations - By xplon
+
+Respect alternative promotion prerequisites in validation - By superdusto
+
+## 4.20.12
+
+By xplon:
+- Hide icons when translating spy names 
+- Warn about translatable ruleset name collisions 
+
+By SomeTroglodyte:
+- Improve context menu indicator size 
+- Console: `civ add` and `civ remove` commands 
+
+Add missing newline in advanced game settings - By unciv-loof
+
+## 4.20.11
+
+Fix double buttons for great people for constructing great improvements
+
+Fixed custom file directories on Android
+
+Approve values of 0 for certain mod constants in validator - By unciv-loof
+
+By SomeTroglodyte: 
+- Fix black outlines for Stat symbols in notifications
+- Fix TriggerUponLosingUnit 
+- Fix Android on screen keyboard show/hide
+- Minor CPU optimization
+
+Add "Vegetation" to Marsh - By EmperorPinguin
+
 ## 4.20.10
 
 By SomeTroglodyte: 
