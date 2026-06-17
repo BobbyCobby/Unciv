@@ -1,0 +1,92 @@
+{
+  "showResourcesAndImprovements": false,
+  "screenSize": "Large",
+  "tutorialsShown": [
+    "Embarking",
+    "Happiness",
+    "EnemyCity",
+    "InjuredUnits",
+    "Introduction",
+    "Workers",
+    "CityExpansion",
+    "RoadsAndRailroads",
+    "OtherCivEncountered",
+    "SlowStart",
+    "NaturalWonders"
+  ],
+  "tutorialTasksCompleted": [
+    "Move an air unit",
+    "See your stats breakdown",
+    "Enter city screen",
+    "Open the options table",
+    "Move unit",
+    "Pass a turn",
+    "Create a trade route",
+    "Conquer a city",
+    "Pick construction",
+    "Construct an improvement"
+  ],
+  "maxAutosavesStored": 10000,
+  "showTutorials": false,
+  "windowState": {
+    "width": 1920,
+    "height": 1018
+  },
+  "visualMods": [
+    "Yet Another Music Pack"
+  ],
+  "showAutosaves": true,
+  "multiplayer": {
+    "userId": "c6e77d6a-c777-4b4f-b5b3-a80d62801f77"
+  },
+  "autoPlay": {},
+  "overview": {
+    "last": "Trades",
+    "Politics": {
+      "showDiagram": true
+    }
+  },
+  "lastGameSetup": {
+    "gameParameters": {
+      "players": [
+        {
+          "playerType": "Human"
+        },
+        {
+          "playerType": "Human"
+        },
+        {},
+        {}
+      ],
+      "espionageEnabled": true,
+      "victoryTypes": [
+        "Scientific",
+        "Cultural",
+        "Domination",
+        "Diplomatic",
+        "Time"
+      ]
+    },
+    "mapParameters": {
+      "shape": "Rectangular",
+      "mapSize": {
+        "name": "Medium",
+        "radius": 20,
+        "width": 44,
+        "height": 29
+      },
+      "worldWrap": true,
+      "createdWithVersion": "4.20.10 (Build 1224)",
+      "seed": 1780261495470
+    }
+  },
+  "enlargeSelectedNotification": false,
+  "keepConsoleOpen": true,
+  "consoleCommandHistory": [
+    "unit add the-provisionals infantry",
+    "unit add golden-world elite ",
+    "unit remove",
+    "unit add the-provisionals marine "
+  ],
+  "version": 1
+}
