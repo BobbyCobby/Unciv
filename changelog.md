@@ -1,3 +1,20 @@
+## 4.20.14
+
+Fix "black screen on next turn button"
+
+Context menu indicators no longer always visible
+
+City buttons center correctly on the tile on zoom-in
+
+Yields no longer overlaps population icons in cities
+
+By SomeTroglodyte:
+- Make gesture timings user-settable in Options-Advanced 
+- Fix "Choose a music track" triggerable in unique builder 
+- Fix city-states always have personality "Friendly" 
+
+Prevent automation from orphaning CreatesOneImprovement markers - By superdusto
+
 ## 4.20.13
 
 Large memory performance improvements for large maps  
