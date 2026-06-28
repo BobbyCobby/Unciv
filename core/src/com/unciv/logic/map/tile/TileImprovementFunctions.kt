@@ -188,7 +188,7 @@ class TileImprovementFunctions(val tile: Tile) {
         }
 
         if (improvement == null) {
-            val wasEncampment = tile.improvement == Constants.barbarianEncampment
+            val wasEncampment = tile.isBarbarianEncampment()
             tile.improvementIsPillaged = false
             tile.setImprovementBasic(null)
             updateVisibility()
@@ -252,13 +252,6 @@ class TileImprovementFunctions(val tile: Tile) {
         unit: MapUnit? = null
     ) {
         val gameContext = GameContext(civ, unit = unit, tile = tile)
-        
-        for (unique in improvement.getMatchingUniques(UniqueType.CostsResources, gameContext)) {
-            val resource = tile.ruleset.tileResources[unique.params[1]] ?: continue
-            var amount = unique.params[0].toInt()
-            if (unique.isModifiedByGameSpeed()) amount = (amount * civ.gameInfo.speed.modifier).toInt()
-            civ.gainStockpiledResource(resource, -amount)
-        }
 
         for (unique in improvement.uniqueObjects) {
             if (unique.hasTriggerConditional() || !unique.conditionalsApply(gameContext)) continue

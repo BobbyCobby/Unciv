@@ -1,3 +1,31 @@
+## 4.20.16
+
+By unciv-loof:
+- Cap force bonus from AdditionalAttacks based on movement points 
+- Fix German unique ability 
+- Fix force calculation when measuring military presence near border 
+
+Make "Barbarian encampment" improvement moddable - By SomeTroglodyte
+
+By BobbyCobby:
+- Clearer mod update icon
+
+Fix map preview crash when changing rulesets - By Angais
+
+## 4.20.15
+
+Improvements that cost stockpiled resources do so when starting construction, not on end, similar to buildings and units
+
+Memory reduction for large maps
+
+AI in Prince difficulty get no unit cost reduction (1:1 with human players)
+
+Require CreatesOneImprovement targets be owned by constructing city - By superdusto
+
+Resource overview tab improvements - By SomeTroglodyte  
+
+Modding: Fixed Personality uniques validation - By mvanhorn
+
 ## 4.20.14
 
 Fix "black screen on next turn button"
