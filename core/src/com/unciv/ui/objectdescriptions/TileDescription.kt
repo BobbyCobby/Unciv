@@ -1,32 +1,34 @@
 package com.unciv.ui.objectdescriptions
 
 import com.unciv.Constants
-import com.unciv.logic.city.City
-import com.unciv.logic.civilization.Civilization
+import com.unciv.logic.map.tile.ImprovementBuildingProblem
 import com.unciv.logic.map.tile.RoadStatus
 import com.unciv.logic.map.tile.Tile
 import com.unciv.models.ruleset.tile.ResourceType
+import com.unciv.models.ruleset.tile.TileResource
 import com.unciv.models.translations.tr
 import com.unciv.ui.components.extensions.toStringSigned
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.civilopediascreen.FormattedLine
 import com.unciv.utils.DebugUtils
-import kotlin.collections.get
+import com.unciv.view.CityView
+import com.unciv.view.CivView
 
 object TileDescription {
 
     /** Get info on a selected tile, used on WorldScreen (right side above minimap), CityScreen or MapEditorViewTab. */
-    fun toMarkup(tile: Tile, viewingCiv: Civilization?, hideUnits: Boolean = false, spyCity: City? = null): ArrayList<FormattedLine> {
+    fun toMarkup(tile: Tile, viewingCiv: CivView?, hideUnits: Boolean = false, spyCity: CityView? = null): ArrayList<FormattedLine> {
         val lineList = ArrayList<FormattedLine>()
         val isViewableToPlayer = viewingCiv == null || DebugUtils.VISIBLE_MAP
-                || viewingCiv.viewableTiles.contains(tile)
+                || viewingCiv.canSeeTile(tile)
 
         if (tile.isCityCenter()) {
             val city = tile.getCity()!!
             var cityString = city.name.tr()
             if (isViewableToPlayer) cityString += " (${city.health})"
             lineList += FormattedLine(cityString)
-            if (DebugUtils.VISIBLE_MAP || city.civ == viewingCiv && (spyCity == null || city == spyCity))
+            if (DebugUtils.VISIBLE_MAP || viewingCiv != null && viewingCiv.isOwnerOf(city)
+                    && (spyCity == null || spyCity.city == city))
                 lineList += city.cityConstructions.getProductionMarkup(tile.ruleset)
         }
 
@@ -41,19 +43,8 @@ object TileDescription {
             else
                 FormattedLine(resource.name, link = "Resource/${resource.name}")
 
-        if (viewingCiv != null && viewingCiv.canSeeResource(resource)) {
-            val tileImprovement = resource.getImprovements()
-                .mapNotNull { tile.ruleset.tileImprovements[it] }
-                .firstOrNull { tile.improvementFunctions.canBuildImprovement(it, viewingCiv.state) }
-            if (tileImprovement?.techRequired != null
-                    && !viewingCiv.tech.isResearched(tileImprovement.techRequired!!)) {
-                lineList += FormattedLine(
-                    "Requires [${tileImprovement.techRequired}]",
-                    link = "Technology/${tileImprovement.techRequired}",
-                    color = "#FAA"
-                )
-            }
-        }
+        if (viewingCiv != null && resource != null && viewingCiv.canSeeResource(resource))
+            addNeedsResearchLine(lineList, tile, viewingCiv, resource)
 
         if (tile.naturalWonder != null)
             lineList += FormattedLine(tile.naturalWonder!!, link = "Terrain/${tile.naturalWonder}")
@@ -63,7 +54,7 @@ object TileDescription {
             lineList += FormattedLine("[${tile.roadStatus.name}]$pillageText", link = "Improvement/${tile.roadStatus.name}")
         }
 
-        val shownImprovement = tile.getShownImprovement(viewingCiv)
+        val shownImprovement = viewingCiv?.getShownImprovementOn(tile) ?: tile.getShownImprovement(null)
         if (shownImprovement != null) {
             val pillageText = if (tile.improvementIsPillaged) " (Pillaged!)" else ""
             lineList += FormattedLine("[$shownImprovement]$pillageText", link = "Improvement/$shownImprovement")
@@ -81,7 +72,8 @@ object TileDescription {
                 tile.civilianUnit!!.name.tr() + " - " + tile.civilianUnit!!.civ.civName.tr(),
                 link = "Unit/${tile.civilianUnit!!.name}"
             )
-        if (tile.militaryUnit != null && isViewableToPlayer && !hideUnits && (viewingCiv == null || !tile.militaryUnit!!.isInvisible(viewingCiv))) {
+        if (tile.militaryUnit != null && isViewableToPlayer && !hideUnits
+                && (viewingCiv == null || viewingCiv.canSeeUnit(tile.militaryUnit!!))) {
             val milUnitString = tile.militaryUnit!!.name.tr() +
                     (if (tile.militaryUnit!!.health < 100) "(" + tile.militaryUnit!!.health + ")" else "") +
                     " - " + tile.militaryUnit!!.civ.civName.tr()
@@ -100,4 +92,29 @@ object TileDescription {
         return lineList
     }
 
+    private fun addNeedsResearchLine(lineList: ArrayList<FormattedLine>, tile: Tile, viewingCiv: CivView, resource: TileResource) {
+        val tileImprovements = resource.getImprovements()
+            .mapNotNull { tile.ruleset.tileImprovements[it] }
+        if (tileImprovements.any { viewingCiv.canBuildImprovementOn(it, tile) })
+            return
+
+        val researchableImprovements = tileImprovements.filter { improvement ->
+            viewingCiv.getImprovementBuildingProblems(improvement, tile)
+                .filterNot { it == ImprovementBuildingProblem.OutsideBorders }
+                .run { any() && all { it == ImprovementBuildingProblem.MissingTech } }
+        }
+        if (researchableImprovements.isEmpty()) return
+
+        val techRequired = researchableImprovements
+            .mapNotNull { viewingCiv.technologyByName(it.techRequired) }
+            .filterNot { viewingCiv.tech.isResearched(it.name) }
+            .minByOrNull { it.cost }
+            ?: return
+
+        lineList += FormattedLine(
+            "Requires [${techRequired.name}]",
+            link = techRequired.makeLink(),
+            color = "#FAA"
+        )
+    }
 }
