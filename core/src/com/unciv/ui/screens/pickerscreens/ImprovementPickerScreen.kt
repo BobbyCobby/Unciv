@@ -30,6 +30,7 @@ import com.unciv.ui.components.input.onActivation
 import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.input.onDoubleClick
 import com.unciv.ui.images.ImageGetter
+import com.unciv.GUI
 import com.unciv.ui.screens.cityscreen.CityScreen
 import kotlin.math.roundToInt
 
@@ -113,7 +114,7 @@ class ImprovementPickerScreen(
         } else if (tile.getOwner()!!.isCurrentPlayer()) {
             val button = tile.getCity()!!.name.toTextButton(hideIcons = true)
             button.onClick {
-                this.game.pushScreen(CityScreen(tile.getCity()!!, null, tile))
+                this.game.pushScreen(CityScreen(GUI.getWorldScreen().gameView.getCityView(tile.getCity()!!), null, tile))
             }
             val label = "Tile owned by [${tile.getOwner()!!.civName}] (You)".toLabel()
             label.onClick { openCivilopedia(tile.getOwner()!!.nation.makeLink()) }
@@ -143,10 +144,11 @@ class ImprovementPickerScreen(
                 .filter { it.shortcutKey == improvement.shortcutKey && it != improvement }
                 // civ can build it (checks tech researched)
                 .filter { tile.improvementFunctions.canBuildImprovement(it, unit.cache.state) }
-                // is technologically more advanced
-                .filter { getRequiredTechColumn(it) > techLevel }
-                .any()
-            // another supersedes this - ignore key binding
+                // is technologically more advanced, or same tech with alphabetically earlier name (tie-breaking
+                // prevents two improvements at the same tech level both registering the same shortcut key,
+                // which would trigger accept() twice and cause a spurious "exit game?" dialog)
+                .any { getRequiredTechColumn(it) > techLevel
+                       || (getRequiredTechColumn(it) == techLevel && it.name < improvement.name) }
             if (isSuperseded) shortcutKey = null
         }
 
