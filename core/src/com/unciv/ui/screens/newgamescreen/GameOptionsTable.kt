@@ -480,10 +480,10 @@ class GameOptionsTable(
         defaultDayValue: Int,
         defaultHourValue: Int,
         defaultMinuteValue: Int,
-        private val dayValues: Array<Int> = arrayOf(0,1,2,3,4,5,6,7,8,9,10,11),
+        private val dayValues: Array<Int> = arrayOf(0,1,2,3,4,5,6,7,8,9,10,11,365,36500,3650000),
         private val hourValues: Array<Int> = arrayOf(0,1,2,3,4,5,6,8,10,12,16,20),
         private val minuteValues: Array<Int> = arrayOf(0,3,5,10,15,20,25,30,35,40,45,50)
-        
+
     ) {
         val dayBox: SelectBox<String> = createTimeCell(dayValues, defaultDayValue, "d")
         val hourBox: SelectBox<String> = createTimeCell(hourValues, defaultHourValue, "h")
@@ -497,7 +497,7 @@ class GameOptionsTable(
                 minuteBox.selected ="3m"
             }
         }
-            
+
         fun updateGameParameter() {
             val value = dayValues[dayBox.selectedIndex] * 24 * 60 +
                 hourValues[hourBox.selectedIndex] * 60 +
@@ -505,7 +505,7 @@ class GameOptionsTable(
 
             param.set(gameParameters, value)
         }
-        
+
         fun createTimeCell(intValues: Array<Int>, initialValue: Int, suffix: String): SelectBox<String> {
             val timeBox = SelectBox<String>(BaseScreen.skin)
             val stringValues =  Array(intValues.size) { i -> "${intValues[i]}" + suffix }
