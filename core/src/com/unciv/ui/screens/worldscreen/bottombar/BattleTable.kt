@@ -118,7 +118,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
         return if (unitTable.selectedUnit != null
                 && !unitTable.selectedUnit!!.isCivilian()
                 && !unitTable.selectedUnit!!.hasUnique(UniqueType.CannotAttack))  // purely cosmetic - hide battle table
-                    MapUnitCombatant(unitTable.selectedUnit!!)
+                    MapUnitCombatant(unitTable.selectedUnit!!.getUnit())
         else if (unitTable.selectedCity != null)
             CityCombatant(unitTable.selectedCity!!.getCity())
         else null // no attacker
@@ -416,7 +416,7 @@ class BattleTable(val worldScreen: WorldScreen) : Table() {
                     Actions.removeActor()
                     )
                 )
-                val targetTileGroup = worldScreen.mapHolder.tileGroups[targetTile]!!
+                val targetTileGroup = worldScreen.mapHolder.tileGroups[worldScreen.selectedGameView.tileMapView.getTile(targetTile)]!!
                 nukeCircle.x = targetTileGroup.x
                 nukeCircle.y = targetTileGroup.y
                 worldScreen.mapHolder.addActorToTileGroupMap(nukeCircle)

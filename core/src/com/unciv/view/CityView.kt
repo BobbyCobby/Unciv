@@ -94,7 +94,7 @@ class CityView(city: City,
     @Readonly fun getCultureStored(): Int = city.expansion.cultureStored
 
     // Constructions
-    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView)
+    val constructions: CityConstructionsView get() = CityConstructionsView(city.cityConstructions, gameView, viewer, spectatorMode)
     @Readonly fun currentConstructionName(): String = city.cityConstructions.currentConstructionName()
     @Readonly fun getBuiltBuildings(): Sequence<Building> = city.cityConstructions.getBuiltBuildings()
     @Readonly fun isPuppet(): Boolean = city.isPuppet
@@ -145,7 +145,7 @@ class CityView(city: City,
 
     @Readonly fun isOwnedByViewer(): Boolean = city.civ === viewer
     @Readonly fun isOwnedTile(tile: Tile): Boolean = tile.getCity() === city
-    @Readonly private fun getTile(tileView: TileView) = tileView.getTile()
+    @Readonly private fun getTile(tileView: TileView) = tileView.unwrap()
 
     // ACTIONS
     private fun canChangeState() = city.civ === viewer && viewer.isCurrentPlayer()
@@ -211,7 +211,7 @@ class CityView(city: City,
     }
     fun tryAddToQueueWithTile(construction: IConstruction, tileView: TileView): Boolean {
         if (!canChangeState()) return false
-        city.cityConstructions.addToQueue(construction, tile = tileView.getTile())
+        city.cityConstructions.addToQueue(construction, tile = tileView.unwrap())
         return true
     }
     fun trySetUnitShouldUseSavedPromotion(baseUnit: String, value: Boolean): Boolean {
