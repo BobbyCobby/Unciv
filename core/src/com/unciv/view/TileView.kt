@@ -67,6 +67,11 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
 
     // Data retrieval
     @Readonly fun position() = tile.position
+    /** Ideally this function should not exist - you should never be able to get a tileview of an unexplored tile
+     * However, currently the way the map works is we set up a tilegroup for all players and use the tileview for that tile
+     * That means that *in order to allow clicking on an unexplored tile* we currently need to accept tileviews of unexplored tiles
+     * */
+    @Readonly fun isExplored() = viewer == null || tile.isExplored(viewer)
     @Readonly fun getVisibleNeighbors(): Sequence<TileView> =
         tile.neighbors
             .filter { viewer == null || it.isExplored(viewer) }
@@ -84,6 +89,7 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun isImpassible(): Boolean = tile.isImpassible()
     @Readonly fun isAdjacentTo(terrainFilter: String): Boolean = tile.isAdjacentTo(terrainFilter)
     @Readonly fun getDefensiveBonus(): Float = tile.getDefensiveBonus()
+    @Readonly fun aerialDistanceTo(other: TileView): Int = tile.aerialDistanceTo(other.getTile())
     @Readonly fun getShownImprovement(): String? = tile.getShownImprovement(viewer)
 
     val baseTerrain: String get() = tile.baseTerrain
@@ -116,9 +122,6 @@ class TileView internal constructor(private val tile: Tile, val tileMapView: Til
     @Readonly fun providesResources(viewingCiv: CivView): Boolean = tile.providesResources(viewingCiv.unwrap())
 
     @Readonly fun getTileMap(): TileMapView = tileMapView
-
-    override fun equals(other: Any?) = other is TileView && other.tile === tile
-    override fun hashCode() = tile.hashCode()
 
     companion object {
         /** For icon/preview rendering of a single tile that has no backing [TileMap]. */

@@ -1139,10 +1139,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
         }
     }
 
-    fun actionsOnDeselect() {
-        if (isPreparingParadrop() || isPreparingAirSweep()) action = null
-    }
-
     /** Add the current position and the most recent movement type to [movementMemories]. Called once at end and once at start of turn, and at unit creation. */
     fun addMovementMemory() {
         movementMemories.add(UnitMovementMemory(getTile().position, mostRecentMoveType))
@@ -1184,6 +1180,6 @@ class MapUnit : IsPartOfGameInfoSerialization {
     }
 
 
-    fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
+    @Readonly fun isNuclearWeapon() = hasUnique(UniqueType.NuclearWeapon)
     //endregion
 }

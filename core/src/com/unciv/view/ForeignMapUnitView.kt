@@ -31,7 +31,6 @@ open class ForeignMapUnitView(internal open val unit: MapUnit, viewer: Civilizat
     @Readonly fun getInterceptionRange(): Int = unit.getInterceptionRange()
     @Readonly fun getPromotions() = unit.promotions
     @Readonly fun getStatusMap() = unit.statusMap
-
-    override fun equals(other: Any?) = other is ForeignMapUnitView && other.unit === unit
-    override fun hashCode() = unit.hashCode()
+    @Readonly fun getMovementMemories() = unit.movementMemories
+    @Readonly fun getMostRecentMoveType() = unit.mostRecentMoveType
 }
