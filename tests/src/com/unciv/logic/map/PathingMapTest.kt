@@ -93,6 +93,27 @@ class PathingMapTest {
     }
 
 
+    @Test(timeout = 500)
+    fun astarPathToDoesNotLoopWhenParentMapContainsCycle() {
+        val start = testGame.getTile(HexCoord(0, 0))
+        val neighbor = testGame.getTile(HexCoord(1, 0))
+        val astar = AStar(
+            start,
+            predicate = { true },
+            cost = { from, to -> if ((from == start && to == neighbor) || (from == neighbor && to == start)) 0f else 1f },
+            heuristic = { _, _ -> 0f }
+        )
+
+        val tilesReachedField = AStar::class.java.getDeclaredField("tilesReached")
+        tilesReachedField.isAccessible = true
+        @Suppress("UNCHECKED_CAST")
+        val tilesReached = tilesReachedField.get(astar) as MutableMap<Tile, Tile>
+        tilesReached[start] = neighbor
+        tilesReached[neighbor] = start
+
+        assertEquals(listOf(start), astar.getPathTo(start).toList())
+    }
+
     @Test
     fun shortestPathEvenWhenItsWayMoreTiles() {
         // A straight road from 0,0 up the x axis

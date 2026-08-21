@@ -147,12 +147,13 @@ class AStar(
      * @return A sequence of tiles representing the path from the destination to the starting point.
      */
     fun getPathTo(destination: Tile): Sequence<Tile> = sequence {
+        val seenNodes = mutableSetOf<Tile>()
         var currentNode = destination
-        while (true) {
-            val parent = tilesReached[currentNode] ?: break  // destination is not in our path
+        while (currentNode in tilesReached) {
+            if (!seenNodes.add(currentNode)) break  // Protect against a parent-cycle in the search tree.
             yield(currentNode)
             if (currentNode == startingPoint) break
-            currentNode = parent
+            currentNode = tilesReached[currentNode] ?: break
         }
     }
 
