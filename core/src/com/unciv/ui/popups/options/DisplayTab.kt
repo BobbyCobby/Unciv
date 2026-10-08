@@ -15,6 +15,7 @@ import com.unciv.ui.components.input.onClick
 import com.unciv.ui.components.widgets.WrappableLabel
 import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.popups.ConfirmPopup
+import com.unciv.ui.screens.basescreen.TextureArraySpriteBatch
 import com.unciv.ui.screens.worldscreen.NotificationsScroll
 import com.unciv.utils.Display
 import com.unciv.utils.ScreenMode
@@ -86,6 +87,30 @@ internal class DisplayTab(
         continuousRenderingLabel.wrap = true
         add(continuousRenderingLabel).colspan(2).padTop(10f).row()
 
+        addCheckbox("Disable newer rendering", settings::disableNewerRendering)
+
+        val maxTextureUnitsText = 
+            try {
+                val maxTextureUnits = TextureArraySpriteBatch().maxTextureUnits
+                "Max texture units: $maxTextureUnits"
+            } catch (e: Exception) { "Error creating TextureArraySpriteBatch" }
+        
+        val maxTextureUnitsLabel = WrappableLabel(
+            maxTextureUnitsText,
+            optionsPopup.tabs.prefWidth, Color.WHITE, 14
+        )
+        maxTextureUnitsLabel.wrap = true
+        add(maxTextureUnitsLabel).colspan(2).padTop(10f).row()
+        
+
+        val disableNewerRenderingDescription = "On some devices the older rendering method is faster"
+        val disableNewerRenderingLabel = WrappableLabel(
+            disableNewerRenderingDescription,
+            optionsPopup.tabs.prefWidth, Color.ORANGE.brighten(0.7f), 14
+        )
+        disableNewerRenderingLabel.wrap = true
+        add(disableNewerRenderingLabel).colspan(2).padTop(10f).row()
+
         addHeader("Experimental")
 
         addCheckbox("Animate Unit movement button", settings::unitMovementButtonAnimation)
@@ -113,7 +138,10 @@ internal class DisplayTab(
         addSlider("Size of Unitset art in Civilopedia", settings::pediaUnitArtSize, 0f, 360f) {
             GUI.setUpdateWorldOnNextRender() // TODO: I doubt that helps, the setting has only influence on CivilopediaScreen
         }.actor.apply {
-            setSnapToValues(threshold = 60f, 0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f)
+            setSnapToValues(threshold = 60f,
+                0f, 32f, 48f, 64f, 96f, 120f, 180f, 240f, 360f,
+                editLabel = "{Size of Unitset art in Civilopedia}:"
+            )
         }
     }
 

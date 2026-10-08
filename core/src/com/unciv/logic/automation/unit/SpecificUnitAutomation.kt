@@ -14,6 +14,7 @@ import com.unciv.models.ruleset.unique.UniqueType
 import com.unciv.models.stats.Stat
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActions
 import com.unciv.ui.screens.worldscreen.unit.actions.UnitActionsFromUniques
+import com.unciv.view.GameView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
@@ -157,9 +158,13 @@ object SpecificUnitAutomation {
 
             /** @return the number of tiles 4 (un-modded) out from this city that could hold a city, ie how lonely this city is */
             @Readonly
-            fun getFrontierScore(city: City) = city.getCenterTile()
-                .getTilesAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1)
-                .count { it.canBeSettled(unit.civ) }
+            fun getFrontierScore(city: City): Int {
+                var frontierScore = 0
+                city.getCenterTile().forEachTileAtDistance(city.civ.gameInfo.ruleset.modOptions.constants.minimalCityDistance + 1) {
+                    if (it.canBeSettled(unit.civ)) frontierScore++
+                }
+                return frontierScore
+            }
 
             val frontierCity = unit.civ.cities.maxByOrNull { getFrontierScore(it) }
             if (frontierCity != null && getFrontierScore(frontierCity) > 0  && unit.movement.canReach(frontierCity.getCenterTile()))
@@ -179,7 +184,7 @@ object SpecificUnitAutomation {
         val shouldSettle = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettle) return foundCityAction.action.invoke()
         //Settle if we're already on the best tile, before looking if we should retreat from barbarians
-        if (tryRunAwayIfNeccessary(unit)) return 
+        if (tryRunAwayIfNeccessary(GameView(unit.civ.gameInfo, unit.civ).getMapUnitView(unit))) return 
         unit.movement.headTowards(bestCityLocation)
         val shouldSettleNow = (unit.getTile() == bestCityLocation && unit.hasMovement())
         if (shouldSettleNow) foundCityAction.action.invoke() 
@@ -318,10 +323,7 @@ object SpecificUnitAutomation {
         if (unit.currentTile == nearbyCityWithAvailableWonders.getCenterTile()) {
             val wonderToHurry =
                     getWonderThatWouldBenefitFromBeingSpedUp(nearbyCityWithAvailableWonders)!!
-            nearbyCityWithAvailableWonders.cityConstructions.constructionQueue.add(
-                0,
-                wonderToHurry.name
-            )
+            nearbyCityWithAvailableWonders.cityConstructions.editQueue { add(0, wonderToHurry.name) }
             return UnitActions.invokeUnitAction(unit, UnitActionType.HurryBuilding)
                 || UnitActions.invokeUnitAction(unit, UnitActionType.HurryWonder)
         }
