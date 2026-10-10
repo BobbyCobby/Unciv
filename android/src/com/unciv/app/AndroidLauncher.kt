@@ -1,6 +1,7 @@
 package com.unciv.app
 
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.NotificationManagerCompat
@@ -10,6 +11,7 @@ import androidx.work.WorkManager
 import com.badlogic.gdx.backends.android.AndroidApplication
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration
 import com.unciv.logic.IdChecker
+import com.unciv.logic.files.SAVE_FILES_FOLDER
 import com.unciv.logic.files.UncivFiles
 import com.unciv.ui.components.fonts.Fonts
 import com.unciv.ui.screens.multiplayerscreens.AddFriendScreen
@@ -55,6 +57,7 @@ open class AndroidLauncher : AndroidApplication() {
         MultiplayerTurnCheckWorker.createNotificationChannels(applicationContext)
 
         CoroutineScope(Dispatchers.IO).launch {
+            createSaveFolder()
             copyMods()
         }
 
@@ -113,6 +116,15 @@ open class AndroidLauncher : AndroidApplication() {
         } catch (ex: Exception) {}
     }
 
+    // Blind attempt to prevent issues like #9604, #9847, #10302, #13113, #15029, #15219
+    private fun createSaveFolder() {
+        val parent = getExternalFilesDir(null) ?: filesDir
+        val newFolder = File(parent, SAVE_FILES_FOLDER)
+        if (!newFolder.mkdirs()) return
+        // Force MediaStore update
+        MediaScannerConnection.scanFile(context, arrayOf(newFolder.absolutePath), null, null)
+    }
+
     override fun onPause() {
         val game = this.game!!
         if (game.isInitializedProxy()
@@ -161,7 +173,7 @@ open class AndroidLauncher : AndroidApplication() {
         if (intent.data != null && IdChecker.isFriendDeepLink(intent.data.toString())) {
             val newFriend = IdChecker.checkAndReturnPlayerUuid(intent.data.toString())
             if (newFriend != null) runOnGLThread {
-                game!!.pushScreen(AddFriendScreen(newFriend.name, newFriend.playerID))
+                game!!.pushScreen{ AddFriendScreen(newFriend.name, newFriend.playerID) }
             }
         }
     }

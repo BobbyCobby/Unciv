@@ -26,7 +26,6 @@ import com.unciv.ui.images.ImageGetter
 import com.unciv.ui.screens.basescreen.BaseScreen
 import com.unciv.ui.screens.diplomacyscreen.DiplomacyScreen
 import com.unciv.view.CivView
-import com.unciv.view.ForeignCivView
 import yairm210.purity.annotations.Readonly
 import kotlin.math.roundToInt
 
@@ -301,10 +300,6 @@ class GlobalPoliticsOverviewTable(
         if (showDiplomacyGroup) {
             val diplomacySize = (overviewScreen.stage.width - (if (portraitMode) 0f else civTable.minWidth))
                 .coerceAtMost(overviewScreen.centerAreaHeight)
-
-            GlobalPoliticsDiagramGroup.Relation.entries // Doing this solves the bug in #15393
-            // I'm still not sure why, it's definitely a compiler bug
-
             val diplomacyGroup = GlobalPoliticsDiagramGroup(undefeatedCivs, diplomacySize)
             table.add(diplomacyGroup).top()
         }
@@ -353,7 +348,9 @@ class GlobalPoliticsOverviewTable(
         table.touchable = Touchable.enabled
         table.onClick {
             if (civInfo.isDefeated() || viewingPlayer.isSpectator() || civInfo == viewingPlayer.getCiv()) return@onClick
-            UncivGame.Current.pushScreen(DiplomacyScreen(viewingPlayer, ForeignCivView(civInfo, viewingPlayer.getCiv())))
+            UncivGame.Current.pushScreen{
+                DiplomacyScreen(viewingPlayer, viewingPlayer.gameView.getForeignCivView(civInfo))
+            }
         }
         return table
     }
